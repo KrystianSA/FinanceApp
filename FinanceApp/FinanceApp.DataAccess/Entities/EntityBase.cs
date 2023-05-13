@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FinanceApp.DataAccess.Entities
 {
-    public abstract class EntityBase
+    public class EntityBase
     {
         [Key]
         public int Id { get; set; }

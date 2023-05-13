@@ -1,7 +1,11 @@
 using FinanceApp.DataAccess;
 using FinanceApp.DataAccess.Entities;
+using FinanceApp.Services.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddDbContext<HomeBudgetStorageContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBudgetDataBaseConnection")));
+builder.Services.AddMediatR(typeof(ResponseBase<>));
 
 var app = builder.Build();
 
