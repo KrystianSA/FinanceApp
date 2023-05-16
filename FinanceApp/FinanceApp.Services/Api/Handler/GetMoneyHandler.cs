@@ -1,4 +1,6 @@
-﻿using FinanceApp.DataAccess;
+﻿using AutoMapper;
+using FinanceApp.DataAccess.CQRS;
+using FinanceApp.DataAccess.CQRS.Queries;
 using FinanceApp.DataAccess.Entities;
 using FinanceApp.Services.Api.Domain;
 using MediatR;
@@ -12,30 +14,29 @@ namespace FinanceApp.Services.Api.Handler
 {
     public class GetMoneyHandler : IRequestHandler<GetMoneyRequest, GetMoneyResponse>
     {
-        private readonly IRepository<Money> _moneyRepository;
+        private readonly IMapper _mapper;
+        private readonly IQueryExecutor _queryExecutor;
 
-        public GetMoneyHandler(IRepository<Money> moneyRepository)
+        public GetMoneyHandler(IMapper mapper, IQueryExecutor queryExecutor)
         {
-            _moneyRepository = moneyRepository;
+            _mapper = mapper;
+            _queryExecutor = queryExecutor;
         }
 
-        public Task<GetMoneyResponse> Handle(GetMoneyRequest request, CancellationToken cancellationToken)
+        public async Task<GetMoneyResponse> Handle(GetMoneyRequest request, CancellationToken cancellationToken)
         {
-            var money = _moneyRepository.GetAll();
+            var query = new GetMoneyQuery() { };
 
-            var domainMoney = money.Select(x => new Domain.Models.Money()
-            { 
-                Description = x.Description,
-                Amount = x.Amount,
-                Date = x.Date,
-            });
+            var money = await _queryExecutor.Execute(query);
+
+            var moneyMapped = _mapper.Map<List<Api.Domain.Models.GetMoney>>(money);
 
             var response = new GetMoneyResponse()
             {
-                Data = domainMoney.ToList()
+                Data = moneyMapped
             };
 
-            return Task.FromResult(response);
+            return response;
         }
     }
 }
